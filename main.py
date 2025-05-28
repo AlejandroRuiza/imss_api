@@ -60,7 +60,7 @@ def iniciar_sesion():
 
     try:
         # Esperar hasta 10 segundos que aparezca el captchaImg
-        wait = WebDriverWait(driver, 10)
+        wait = WebDriverWait(driver, 40)
         imagen_element = wait.until(EC.presence_of_element_located((By.ID, "captchaImg")))
 
         # Captura la imagen directamente a PNG en memoria
