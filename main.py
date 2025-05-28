@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from fastapi.responses import JSONResponse
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
 import os
 import uuid
 import base64
@@ -22,7 +23,30 @@ class CaptchaInput(BaseModel):
     email: str
 
 def iniciar_driver():
-    driver = webdriver.Chrome()
+    options = Options()
+    options.add_argument("--headless=new")  # Usa la nueva implementación, menos detectable
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--disable-blink-features=AutomationControlled")
+    options.add_argument("--disable-gpu")
+    options.add_argument("--window-size=1920,1080")
+
+    # User-Agent personalizado (parece un humano real)
+    options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                         "AppleWebKit/537.36 (KHTML, like Gecko) "
+                         "Chrome/122.0.0.0 Safari/537.36")
+
+    driver = webdriver.Chrome(options=options)
+
+    # Quitar indicios de headless
+    driver.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
+        "source": """
+            Object.defineProperty(navigator, 'webdriver', {
+                get: () => undefined
+            })
+            """
+    })
+
     return driver
 
 @app.get("/iniciar-sesion")
