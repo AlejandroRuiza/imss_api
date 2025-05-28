@@ -57,7 +57,9 @@ def iniciar_sesion():
     driver = iniciar_driver()
     driver.get("https://serviciosdigitales.imss.gob.mx/semanascotizadas-web/usuarios/IngresoAsegurado")
     time.sleep(3)
-
+    print("Título de la página:", driver.title)
+    print("URL actual:", driver.current_url)
+    print("HTML parcial:", driver.page_source[:1000])  # primeros 1000 chars del HTML
     try:
         # Esperar hasta 10 segundos que aparezca el captchaImg
         wait = WebDriverWait(driver, 40)
