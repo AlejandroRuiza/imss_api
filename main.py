@@ -59,24 +59,24 @@ def iniciar_sesion():
     time.sleep(3)
 
     try:
-    # Esperar hasta 10 segundos que aparezca el captchaImg
-    wait = WebDriverWait(driver, 10)
-    imagen_element = wait.until(EC.presence_of_element_located((By.ID, "captchaImg")))
+        # Esperar hasta 10 segundos que aparezca el captchaImg
+        wait = WebDriverWait(driver, 10)
+        imagen_element = wait.until(EC.presence_of_element_located((By.ID, "captchaImg")))
 
-    # Captura la imagen directamente a PNG en memoria
-    imagen_png = imagen_element.screenshot_as_png
-    # Codifica la imagen a base64
-    imagen_base64 = base64.b64encode(imagen_png).decode('utf-8')
+        # Captura la imagen directamente a PNG en memoria
+        imagen_png = imagen_element.screenshot_as_png
+        # Codifica la imagen a base64
+        imagen_base64 = base64.b64encode(imagen_png).decode('utf-8')
 
-    session_id = uuid.uuid4().hex
-    sessions[session_id] = {"driver": driver}
-    print("Driver en iniciar sesión:", driver)
-    return {"session_id": session_id, "captcha_base64": imagen_base64}
+        session_id = uuid.uuid4().hex
+        sessions[session_id] = {"driver": driver}
+        print("Driver en iniciar sesión:", driver)
+        return {"session_id": session_id, "captcha_base64": imagen_base64}
 
-except Exception as e:
-    print("Error al obtener captcha:", e)
-    driver.save_screenshot("captcha_error.png")  # Para depuración
-    raise HTTPException(status_code=500, detail="No se encontró el captcha.")
+    except Exception as e:
+        print("Error al obtener captcha:", e)
+        driver.save_screenshot("captcha_error.png")  # Para depuración
+        raise HTTPException(status_code=500, detail="No se encontró el captcha.")
 
 @app.post("/resolver-captcha")
 def resolver_captcha(data: CaptchaInput):
