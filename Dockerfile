@@ -1,6 +1,6 @@
 FROM python:3.11-slim
 
-# Instala dependencias necesarias para Chrome y Selenium
+# Instalar dependencias
 RUN apt-get update && apt-get install -y \
     wget \
     unzip \
@@ -23,31 +23,35 @@ RUN apt-get update && apt-get install -y \
     libxdamage1 \
     libxrandr2 \
     xdg-utils \
-    --no-install-recommends
+    --no-install-recommends && \
+    rm -rf /var/lib/apt/lists/*
 
-# Instala Google Chrome versión 114.0.5735.198
-RUN wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
-    apt-get install -y ./google-chrome-stable_current_amd64.deb && \
-    rm google-chrome-stable_current_amd64.deb
+# Descargar e instalar Google Chrome 137.0.7151.55
+RUN wget -q https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/137.0.7151.55/linux64/chrome-linux64.zip && \
+    unzip chrome-linux64.zip && \
+    mv chrome-linux64 /opt/chrome && \
+    ln -s /opt/chrome/chrome /usr/bin/google-chrome && \
+    rm chrome-linux64.zip
 
-# Instala ChromeDriver versión 114.0.5735.90 compatible con Chrome 114
-RUN wget -q -O /tmp/chromedriver.zip https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip && \
-    unzip /tmp/chromedriver.zip -d /usr/local/bin/ && \
-    rm /tmp/chromedriver.zip && \
-    chmod +x /usr/local/bin/chromedriver
+# Descargar e instalar ChromeDriver 137
+RUN wget -q https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/137.0.7151.55/linux64/chromedriver-linux64.zip && \
+    unzip chromedriver-linux64.zip && \
+    mv chromedriver-linux64/chromedriver /usr/local/bin/chromedriver && \
+    chmod +x /usr/local/bin/chromedriver && \
+    rm -rf chromedriver-linux64 chromedriver-linux64.zip
 
-# Directorio de trabajo
+# Crear directorio de trabajo
 WORKDIR /app
 
-# Copia los requerimientos e instala dependencias Python
+# Copiar e instalar dependencias de Python
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copia el código
+# Copiar el resto del proyecto
 COPY . .
 
-# Expone el puerto para FastAPI
+# Exponer el puerto para FastAPI
 EXPOSE 8000
 
-# Comando para iniciar la app
+# Comando para iniciar el servidor
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
