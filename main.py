@@ -8,6 +8,8 @@ import os
 import uuid
 import base64
 import time
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 app = FastAPI()
 sessions = {}
@@ -56,7 +58,10 @@ def iniciar_sesion():
     driver.get("https://serviciosdigitales.imss.gob.mx/semanascotizadas-web/usuarios/IngresoAsegurado")
     time.sleep(3)
 
-    imagen_element = driver.find_element(By.ID, "captchaImg")
+    try:
+    # Esperar hasta 10 segundos que aparezca el captchaImg
+    wait = WebDriverWait(driver, 10)
+    imagen_element = wait.until(EC.presence_of_element_located((By.ID, "captchaImg")))
 
     # Captura la imagen directamente a PNG en memoria
     imagen_png = imagen_element.screenshot_as_png
@@ -67,6 +72,11 @@ def iniciar_sesion():
     sessions[session_id] = {"driver": driver}
     print("Driver en iniciar sesión:", driver)
     return {"session_id": session_id, "captcha_base64": imagen_base64}
+
+except Exception as e:
+    print("Error al obtener captcha:", e)
+    driver.save_screenshot("captcha_error.png")  # Para depuración
+    raise HTTPException(status_code=500, detail="No se encontró el captcha.")
 
 @app.post("/resolver-captcha")
 def resolver_captcha(data: CaptchaInput):
