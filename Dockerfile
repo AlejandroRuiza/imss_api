@@ -38,7 +38,7 @@ RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key
     rm -rf /var/lib/apt/lists/*
 
 # Instalar ChromeDriver compatible con la versión instalada de Chrome
-RUN CHROME_MAJOR_VERSION=$(google-chrome --version | grep -oP '\d+') && \
+RUN CHROME_MAJOR_VERSION=$(google-chrome --version | grep -oP '\d+' | head -1) && \
     echo "Chrome major version: $CHROME_MAJOR_VERSION" && \
     CHROMEDRIVER_VERSION=$(curl -sS https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_MAJOR_VERSION) && \
     echo "ChromeDriver version: $CHROMEDRIVER_VERSION" && \
