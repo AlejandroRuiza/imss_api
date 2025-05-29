@@ -26,14 +26,15 @@ class CaptchaInput(BaseModel):
     email: str
 
 def iniciar_driver():
-    options = uc.ChromeOptions()
-    # Puedes agregar opciones si quieres, por ejemplo headless (pero a veces es mejor no usarlo)
-    # options.add_argument('--headless')
-    options.add_argument('--no-sandbox')
-    options.add_argument('--disable-dev-shm-usage')
+    options = Options()
+    options.add_argument('--no-sandbox')              # Evita problemas con el sandbox
+    options.add_argument('--disable-dev-shm-usage')   # Evita problemas con /dev/shm limitado
+    options.add_argument('--headless=new')            # Modo headless moderno, o '--headless' si falla
     options.add_argument('--disable-gpu')
+    options.add_argument('--disable-extensions')
+    options.add_argument('--disable-software-rasterizer')
     options.add_argument('--window-size=1920,1080')
-    # Inicia undetected chromedriver con esas opciones
+
     driver = uc.Chrome(options=options)
     return driver
 
