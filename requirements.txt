@@ -3,3 +3,4 @@ uvicorn[standard]
 selenium
 requests
 pydantic
+undetected-chromedriver

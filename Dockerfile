@@ -33,17 +33,10 @@ RUN wget -q https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/137.0.71
     ln -s /opt/chrome/chrome /usr/bin/google-chrome && \
     rm chrome-linux64.zip
 
-# Descargar e instalar ChromeDriver 137
-RUN wget -q https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/137.0.7151.55/linux64/chromedriver-linux64.zip && \
-    unzip chromedriver-linux64.zip && \
-    mv chromedriver-linux64/chromedriver /usr/local/bin/chromedriver && \
-    chmod +x /usr/local/bin/chromedriver && \
-    rm -rf chromedriver-linux64 chromedriver-linux64.zip
-
 # Crear directorio de trabajo
 WORKDIR /app
 
-# Copiar e instalar dependencias de Python
+# Copiar e instalar dependencias de Python (incluye undetected-chromedriver)
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 

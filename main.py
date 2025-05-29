@@ -10,6 +10,7 @@ import base64
 import time
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import undetected_chromedriver as uc
 
 app = FastAPI()
 sessions = {}
@@ -25,30 +26,15 @@ class CaptchaInput(BaseModel):
     email: str
 
 def iniciar_driver():
-    options = Options()
-    options.add_argument("--headless=new")  # Usa la nueva implementación, menos detectable
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
-    options.add_argument("--disable-blink-features=AutomationControlled")
-    options.add_argument("--disable-gpu")
-    options.add_argument("--window-size=1920,1080")
-
-    # User-Agent personalizado (parece un humano real)
-    options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                         "AppleWebKit/537.36 (KHTML, like Gecko) "
-                         "Chrome/122.0.0.0 Safari/537.36")
-
-    driver = webdriver.Chrome(options=options)
-
-    # Quitar indicios de headless
-    driver.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
-        "source": """
-            Object.defineProperty(navigator, 'webdriver', {
-                get: () => undefined
-            })
-            """
-    })
-
+    options = uc.ChromeOptions()
+    # Puedes agregar opciones si quieres, por ejemplo headless (pero a veces es mejor no usarlo)
+    # options.add_argument('--headless')
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
+    options.add_argument('--disable-gpu')
+    options.add_argument('--window-size=1920,1080')
+    # Inicia undetected chromedriver con esas opciones
+    driver = uc.Chrome(options=options)
     return driver
 
 @app.get("/iniciar-sesion")
